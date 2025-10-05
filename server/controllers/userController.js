@@ -10,6 +10,7 @@ export const syncUser = (req, res) => {
   const { role } = req.body; // mentor or mentee
 
   const checkQuery = "SELECT * FROM users WHERE firebase_uid = ?";
+  console.log("this is user data : ",checkQuery)
 
   db.query(checkQuery, [uid], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });

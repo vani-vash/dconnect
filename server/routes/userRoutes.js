@@ -1,18 +1,17 @@
-// routes/userRoutes.js
+// Add this after other imports
 import express from 'express';
-import { verifyFirebaseToken } from '../middleware/firebaseAuth.js';
-import { syncUser, getProfile } from '../controllers/userController.js';
+import { db } from '../config/db.js';
+const router = express.Router();
 
-const router = express.Router(); // ✅ You were missing this line!
+// ✅ Get all mentors (for Dashboard.jsx)
+router.get('/mentors', async (req, res) => {
+  try {
+    const [rows] = await db.promise().query('SELECT * FROM users WHERE role = "mentor"');
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching mentors:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
 
-// ✅ User sync route
-router.post('/sync', verifyFirebaseToken, syncUser);
-
-// ✅ Get user profile route
-router.get('/profile', verifyFirebaseToken, getProfile);
-
-// (You can add more routes later, e.g. getAllMentors, verifyMentor, etc.)
-
-export default router; // ✅ Proper default export
-
-
+export default router;

@@ -1,105 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import Layout from './components/Layout';
 import Login from './components/Login';
-import Navbar from './components/Navbar';
-import UserProfile from './components/UserProfile';
-import MentorMatching from './components/MentorMatching';
-import ChatSystem from './components/ChatSystem';
-import VideoCall from './components/VideoCall';
-import MentorDashboard from './components/MentorDashboard';
-import MenteeDashboard from './components/MenteeDashboard';
-import SchedulingSystem from './components/SchedulingSystem';
-import './App.css';
+import Dashboard from './pages/Dashboard';
+import MentorDashboard from './pages/MentorDashboard';
+import FindMentors from './pages/FindMentors';
+import Chat from './pages/Chat';
+import Schedule from './pages/Schedule';
+import Progress from './pages/Progress';
+import Community from './pages/Community';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [currentView, setCurrentView] = useState('dashboard');
-  const [selectedChat, setSelectedChat] = useState(null);
-  const [showVideoCall, setShowVideoCall] = useState(false);
-  const [videoCallMentor, setVideoCallMentor] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleLogin = (userData) => {
-    setUser(userData);
-    setCurrentView('dashboard');
-  };
+  useEffect(() => {
+    // Check if user is already logged in
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Verify token and get user info
+      fetch('http://localhost:3000/api/users/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.user_id) {
+          setUser(data);
+        }
+      })
+      .catch(err => {
+        console.error('Token verification failed:', err);
+        localStorage.removeItem('token');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
     setUser(null);
-    setCurrentView('dashboard');
-    setSelectedChat(null);
-    setShowVideoCall(false);
   };
 
-  const handleProfileUpdate = (updatedProfile) => {
-    setUser(prev => ({
-      ...prev,
-      ...updatedProfile
-    }));
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
 
-  const startVideoCall = (mentorName) => {
-    setVideoCallMentor(mentorName);
-    setShowVideoCall(true);
-  };
-
-  const renderCurrentView = () => {
-    if (!user) return null;
-
-    switch (currentView) {
-      case 'dashboard':
-        return user.role === 'mentor' ? 
-          <MentorDashboard user={user} /> : 
-          <MenteeDashboard user={user} />;
-      
-      case 'profile':
-        return <UserProfile user={user} onUpdate={handleProfileUpdate} />;
-      
-      case 'find-mentor':
-        return <MentorMatching menteeId={user.uid} />;
-      
-      case 'chat':
-        return <ChatSystem currentUser={user} selectedChat={selectedChat} />;
-      
-      case 'schedule':
-        return <SchedulingSystem user={user} userRole={user.role} />;
-      
-      default:
-        return user.role === 'mentor' ? 
-          <MentorDashboard user={user} /> : 
-          <MenteeDashboard user={user} />;
-    }
-  };
+  if (!user) {
+    return <Login onLogin={setUser} />;
+  }
 
   return (
-    <div className="min-h-screen gradient-bg">
-      {!user ? (
-        <div className="animate-fade-in">
-          <Login onLogin={handleLogin} />
-        </div>
-      ) : (
-        <div className="animate-fade-in">
-          <Navbar 
-            user={user} 
-            onLogout={handleLogout}
-            currentView={currentView}
-            onViewChange={setCurrentView}
-          />
-          <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
-            <div className="animate-slide-up">
-              {renderCurrentView()}
-            </div>
-          </main>
-          {showVideoCall && (
-            <div className="animate-scale-in">
-              <VideoCall 
-                isOpen={showVideoCall}
-                onClose={() => setShowVideoCall(false)}
-                mentorName={videoCallMentor}
-              />
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+    <Router>
+      <Layout user={user} onLogout={handleLogout}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={
+            user.role === 'mentor' ? <MentorDashboard user={user} /> : <Dashboard user={user} />
+          } />
+          <Route path="/mentors" element={<FindMentors user={user} />} />
+          <Route path="/chat" element={<Chat user={user} />} />
+          <Route path="/schedule" element={<Schedule user={user} />} />
+          <Route path="/progress" element={<Progress user={user} />} />
+          <Route path="/community" element={<Community user={user} />} />
+          <Route path="/profile" element={<Profile user={user} />} />
+          <Route path="/settings" element={<Settings user={user} />} />
+          <Route path="/mentor-dashboard" element={<MentorDashboard user={user} />} />
+          <Route path="/mentees" element={<FindMentors user={user} />} />
+          <Route path="/analytics" element={<Progress user={user} />} />
+        </Routes>
+      </Layout>
+      <Toaster position="top-right" />
+    </Router>
   );
 }
 

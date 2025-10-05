@@ -8,6 +8,7 @@ import feedbackRoutes from './routes/feedbackRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import matchRoutes from './routes/matchRoutes.js';
 import { verifyFirebaseToken } from './middleware/firebaseAuth.js'; // ✅ added
+import { syncUser } from './controllers/userController.js';
 
 dotenv.config();
 const app = express();
@@ -22,6 +23,7 @@ app.use(cors({
 app.use(express.json());
 
 // API routes
+app.get('/api/syncUser', syncUser);
 app.use('/api/users', userRoutes);
 app.use('/api/slots', slotRoutes);
 app.use('/api/feedback', feedbackRoutes);
