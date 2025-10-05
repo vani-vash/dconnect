@@ -1,0 +1,5 @@
+- [x] Install @tailwindcss/postcss package in client directory
+- [x] Update client/postcss.config.js to use @tailwindcss/postcss instead of tailwindcss
+- [x] Run dev server to verify the PostCSS error is resolved
+- [x] Add @reference directive to index.css for custom colors in Tailwind v4
+- [x] Update tailwind.config.js to define custom colors under theme.colors for Tailwind v4 compatibility

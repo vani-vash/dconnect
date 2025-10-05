@@ -1,0 +1,49 @@
+{
+  "hash": "2322b593",
+  "configHash": "12ae6461",
+  "lockfileHash": "4a0f353c",
+  "browserHash": "11f629e1",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "808387ec",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "5b81f469",
+      "needsInterop": true
+    },
+    "firebase/auth": {
+      "src": "../../node_modules/firebase/auth/dist/esm/index.esm.js",
+      "file": "firebase_auth.js",
+      "fileHash": "96980657",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "d4dec233",
+      "needsInterop": false
+    },
+    "firebase/app": {
+      "src": "../../node_modules/firebase/app/dist/esm/index.esm.js",
+      "file": "firebase_app.js",
+      "fileHash": "29cdc760",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-7OC7GRZF": {
+      "file": "chunk-7OC7GRZF.js"
+    },
+    "chunk-MLT5HUW5": {
+      "file": "chunk-MLT5HUW5.js"
+    },
+    "chunk-HKJ2B2AA": {
+      "file": "chunk-HKJ2B2AA.js"
+    }
+  }
+}
